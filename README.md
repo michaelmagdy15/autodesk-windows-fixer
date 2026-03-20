@@ -1,6 +1,10 @@
 <div align="center">
 
+<img src="assets/banner.png" alt="Autodesk Windows Fixer Banner" width="100%" style="border-radius:15px; margin-bottom: 20px;"/>
+
 # 🚀 Autodesk Windows Fixer & Cleaner 🚀
+<img src="assets/icon.png" alt="App Icon" width="120" style="margin-bottom: 20px;"/>
+
 **The ultimate, visually stunning PowerShell tool to completely remove all traces of Autodesk software from your Windows PC.**
 
 ![PowerShell](https://img.shields.io/badge/PowerShell-%235391FE.svg?style=for-the-badge&logo=powershell&logoColor=white)
