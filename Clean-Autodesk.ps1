@@ -239,15 +239,25 @@ $btnStart.add_Click({
         LogMsg "> Initializing automated cleanup..." 5
         Wait-UI 800
 
+        LogMsg "> Uninstalling Autodesk ODIS (Install Service)..." 8
+        $odisUninstaller = "$env:ProgramFiles\Autodesk\AdODIS\V1\RemoveODIS.exe"
+        if (Test-Path $odisUninstaller) {
+            try {
+                $proc = Start-Process -FilePath $odisUninstaller -ArgumentList "--mode silent" -PassThru -NoNewWindow -ErrorAction SilentlyContinue
+                if ($proc) { $proc.WaitForExit() }
+            } catch {}
+            Wait-UI 1500
+        }
+
         LogMsg "> Force stopping Autodesk processes..." 10
-        $processesToStop = @("AdAppMgr*", "AdskLicensing*", "AdskIdentityManager*", "AdODIS*", "AutodeskDesktopApp*", "acad", "revit", "maya")
+        $processesToStop = @("AdAppMgr*", "AdskLicensing*", "AdskIdentityManager*", "AdODIS*", "AutodeskDesktopApp*", "acad", "revit", "maya", "AdskAccessServiceHost*", "RemoveODIS*")
         foreach ($proc in $processesToStop) {
             Get-Process -Name $proc -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
         }
         Wait-UI 500
 
         LogMsg "> Terminating Autodesk system services..." 20
-        $servicesToStop = @("AdskLicensingService", "Autodesk Desktop App Service", "FlexNet Licensing Service", "FlexNet Licensing Service 64")
+        $servicesToStop = @("AdskLicensingService", "Autodesk Desktop App Service", "FlexNet Licensing Service", "FlexNet Licensing Service 64", "Autodesk Access Service Host", "AdODISService")
         foreach ($svc in $servicesToStop) {
             $runningSvc = Get-Service -Name $svc -ErrorAction SilentlyContinue
             if ($runningSvc -and $runningSvc.Status -eq 'Running') {
@@ -295,6 +305,19 @@ $btnStart.add_Click({
         foreach ($regPath in $registryPaths) {
             LogMsg "  -> Erased key: $regPath" 80
             cmd.exe /c "reg delete `"$regPath`" /f" 2>&1 | Out-Null
+        }
+
+        LogMsg "> Unblocking Autodesk installers in registry..." 82
+        $ifeoPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options"
+        if (Test-Path $ifeoPath) {
+            $subKeys = Get-ChildItem -Path $ifeoPath -ErrorAction SilentlyContinue
+            foreach ($key in $subKeys) {
+                $debugger = Get-ItemProperty -Path $key.PSPath -Name "Debugger" -ErrorAction SilentlyContinue
+                if ($debugger -and $debugger.Debugger -match "Blocked") {
+                    LogMsg "  -> Unblocked installer: $($key.PSChildName)" 84
+                    Remove-ItemProperty -Path $key.PSPath -Name "Debugger" -Force -ErrorAction SilentlyContinue
+                }
+            }
         }
 
         LogMsg "> Scanning registry for phantom uninstallers..." 85
