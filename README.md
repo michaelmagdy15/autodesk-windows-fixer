@@ -58,6 +58,16 @@ It is designed to completely remove **all traces** of Autodesk software from you
 
 ---
 
+## 🛡️ Open Source & Safety (No Viruses!)
+We understand that downloading executables (`.exe`) that ask for Administrator privileges can be concerning. Because this tool handles deep registry modifications and forceful process termination, **some overzealous antivirus programs might accidentally flag it as a false positive.**
+
+That is exactly why **this entire project is 100% transparent and open-source!** 
+You are highly encouraged to read through the [`Clean-Autodesk.ps1`](Clean-Autodesk.ps1) source code yourself to verify precisely what background commands are being executed. There is nothing hidden!
+
+If you prefer not to download the pre-packaged release, you can simply clone this repository and run the raw PowerShell script manually.
+
+---
+
 ## 🤝 Contributing
 Found an obscure Autodesk folder or registry path we missed? Feel free to open issues or submit pull requests! If you edit the `Clean-Autodesk.ps1` file, make sure not to break the integrated XAML interface!
 
